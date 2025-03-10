@@ -80,6 +80,7 @@ class ServerManager {
                 ServerUtils_1.default.error(this._manager, `[${opts.identifier}] Failed To Add Server: Invalid SID (Incorrect Length)`);
                 return false;
             }
+            console.log('opts', JSON.stringify(opts));
             const sid = await this.fetchId(opts.identifier, opts.serverId[0], opts.region);
             if (sid) {
                 opts.serverId.push(sid);
@@ -777,7 +778,10 @@ class ServerManager {
                     query: 'query sid($gameserverId: Int!, $region: REGION!) {\n  sid(gameserverId: $gameserverId, region: $region)\n}',
                 }),
             });
-            console.log(JSON.stringify(response));
+            console.log('fetchId', JSON.stringify(response));
+            console.log('identifier', JSON.stringify(identifier));
+            console.log('sid', JSON.stringify(sid));
+            console.log('region', JSON.stringify(region));
             if (!response.ok) {
                 ServerUtils_1.default.error(this._manager, `[${identifier}] Failed To Fetch Server ID: ${response.status} ${response.statusText}`);
                 return null;

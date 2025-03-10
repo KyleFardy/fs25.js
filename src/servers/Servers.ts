@@ -101,7 +101,7 @@ export default class ServerManager {
         );
         return false;
       }
-
+      console.log('opts', JSON.stringify(opts));
       const sid = await this.fetchId(
         opts.identifier,
         opts.serverId[0],
@@ -1027,7 +1027,10 @@ export default class ServerManager {
             'query sid($gameserverId: Int!, $region: REGION!) {\n  sid(gameserverId: $gameserverId, region: $region)\n}',
         }),
       });
-      console.log(JSON.stringify(response));
+      console.log('fetchId', JSON.stringify(response));
+      console.log('identifier', JSON.stringify(identifier));
+      console.log('sid', JSON.stringify(sid));
+      console.log('region', JSON.stringify(region));
       if (!response.ok) {
         ServerUtils.error(
           this._manager,
