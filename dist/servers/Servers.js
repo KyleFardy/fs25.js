@@ -777,6 +777,7 @@ class ServerManager {
                     query: 'query sid($gameserverId: Int!, $region: REGION!) {\n  sid(gameserverId: $gameserverId, region: $region)\n}',
                 }),
             });
+            console.log(JSON.stringify(response));
             if (!response.ok) {
                 ServerUtils_1.default.error(this._manager, `[${identifier}] Failed To Fetch Server ID: ${response.status} ${response.statusText}`);
                 return null;

@@ -1027,7 +1027,7 @@ export default class ServerManager {
             'query sid($gameserverId: Int!, $region: REGION!) {\n  sid(gameserverId: $gameserverId, region: $region)\n}',
         }),
       });
-
+      console.log(JSON.stringify(response));
       if (!response.ok) {
         ServerUtils.error(
           this._manager,
