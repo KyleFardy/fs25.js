@@ -12,14 +12,14 @@ class ServiceStateHandler {
         if (server.status === status)
             return;
         server.status = status;
-        if (status === "RUNNING" && !server.flags.includes("READY")) {
+        if (status === 'RUNNING' && !server.flags.includes('READY')) {
             ServerUtils_1.default.setReady(manager, server, true);
         }
-        else if (status === "STOPPED" && server.flags.includes("READY")) {
+        else if (status === 'STOPPED' && server.flags.includes('READY')) {
             ServerUtils_1.default.setReady(manager, server, false);
         }
         manager.events.emit(constants_1.RCEEvent.ServiceStatus, { server, status });
-        if (status === "SUSPENDED") {
+        if (status === 'SUSPENDED') {
             manager.logger.warn(`[${server.identifier}] Server Suspended - Removing`);
             manager.servers.remove(server);
         }

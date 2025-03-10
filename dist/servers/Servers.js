@@ -94,7 +94,7 @@ class ServerManager {
             ServerUtils_1.default.error(this._manager, `[${opts.identifier}] Failed To Add Server: No Status Information`);
             return false;
         }
-        if (status === "SUSPENDED") {
+        if (status === 'SUSPENDED') {
             ServerUtils_1.default.error(this._manager, `[${opts.identifier}] Failed To Add Server: Suspended`);
             return false;
         }
@@ -108,7 +108,7 @@ class ServerManager {
                     interval: opts.playerRefreshing
                         ? setInterval(() => {
                             const s = this.get(opts.identifier);
-                            if (s?.status === "RUNNING") {
+                            if (s?.status === 'RUNNING') {
                                 this.updatePlayers(opts.identifier);
                             }
                         }, 60_000)
@@ -119,7 +119,7 @@ class ServerManager {
                     interval: opts.radioRefreshing
                         ? setInterval(() => {
                             const s = this.get(opts.identifier);
-                            if (s?.status === "RUNNING") {
+                            if (s?.status === 'RUNNING') {
                                 this.updateBroadcasters(opts.identifier);
                             }
                         }, 30_000)
@@ -130,7 +130,7 @@ class ServerManager {
                     interval: opts.extendedEventRefreshing
                         ? setInterval(() => {
                             const s = this.get(opts.identifier);
-                            if (s?.status === "RUNNING") {
+                            if (s?.status === 'RUNNING') {
                                 this.fetchGibs(opts.identifier);
                             }
                         }, 60_000)
@@ -147,7 +147,7 @@ class ServerManager {
         const server = this._servers.get(opts.identifier);
         this._socket.addServer(server);
         this._manager.logger.debug(`[${server.identifier}] Server Status: ${status}`);
-        if (status === "RUNNING") {
+        if (status === 'RUNNING') {
             await ServerUtils_1.default.setReady(this._manager, server, true);
             if (opts.playerRefreshing) {
                 await this.updatePlayers(opts.identifier);
@@ -163,7 +163,7 @@ class ServerManager {
     }
     /**
      *
-     * @param server {RustServer} - The server to update
+     * @param server {FarmingSim25Server} - The server to update
      * @returns {void}
      * @description Updates a server
      *
@@ -209,7 +209,7 @@ class ServerManager {
     }
     /**
      *
-     * @param server {RustServer} - The server to remove
+     * @param server {FarmingSim25Server} - The server to remove
      * @returns {void}
      * @description Removes a server from the manager
      *
@@ -230,7 +230,7 @@ class ServerManager {
     /**
      *
      * @param identifier {string} - The server identifier
-     * @returns {RustServer | undefined} - The server
+     * @returns {FarmingSim25Server | undefined} - The server
      * @description Gets a server by its identifier
      *
      * @example
@@ -243,7 +243,7 @@ class ServerManager {
     }
     /**
      *
-     * @returns {RustServer[]} - All servers
+     * @returns {FarmingSim25Server[]} - All servers
      * @description Gets all servers
      *
      * @example
@@ -258,7 +258,7 @@ class ServerManager {
      *
      * @param identifier - The server identifier
      * @param rawHostname - Whether to return the raw hostname
-     * @returns {Promise<RustServerInformation | null>} - The server information
+     * @returns {Promise<FarmingSim25ServerInformation | null>} - The server information
      *
      * @example
      * ```js
@@ -276,9 +276,9 @@ class ServerManager {
             ServerUtils_1.default.error(this._manager, `[${identifier}] Invalid Server`);
             return null;
         }
-        const info = await this.command(server.identifier, "serverinfo", true);
+        const info = await this.command(server.identifier, 'serverinfo', true);
         if (!info?.response) {
-            ServerUtils_1.default.error(this._manager, "Failed To Fetch Server Info", server);
+            ServerUtils_1.default.error(this._manager, 'Failed To Fetch Server Info', server);
             return null;
         }
         const data = helper_1.default.cleanOutput(info.response, true, rawHostname);
@@ -298,17 +298,17 @@ class ServerManager {
         this._manager.logger.debug(`[${identifier}] Fetching Advanced Information`);
         try {
             const payload = {
-                operationName: "ctx",
+                operationName: 'ctx',
                 variables: {
                     sid: server.serverId[1],
                     region: server.region,
                 },
-                query: "query ctx($sid: Int!, $region: REGION!) {\n  cfgContext(rsid: {id: $sid, region: $region}) {\n    ns {\n      ...CtxFields\n      __typename\n    }\n    errors {\n      mutator\n      affectedPaths\n      error {\n        class_\n        args\n        __typename\n      }\n      scope\n      __typename\n    }\n    __typename\n  }\n}\n\nfragment GameServerFields on GameServer {\n  id\n  serverName\n  serverPort\n  serverIp\n  autoUpdate\n  __typename\n}\n\nfragment PermissionFields on Permission {\n  userName\n  created\n  __typename\n}\n\nfragment MysqlDbFields on CustomerMysqlDb {\n  httpUrl\n  host\n  port\n  database\n  username\n  password\n  __typename\n}\n\nfragment ServiceStateFields on ServiceState {\n  state\n  fsmState\n  fsmIsTransitioning\n  fsmIsExclusiveLocked\n  fsmFileAccess\n  fsmLastStateChange\n  fsmStateLiveProgress {\n    ... on InstallProgress {\n      action\n      percentage\n      __typename\n    }\n    ... on BroadcastProgress {\n      nextMessageAt\n      stateExitAt\n      __typename\n    }\n    __typename\n  }\n  __typename\n}\n\nfragment RestartTaskFields on RestartTask {\n  id\n  runOnWeekday\n  runOnDayofmonth\n  runAtTimeofday\n  runInTimezone\n  schedule\n  data {\n    description\n    args\n    scheduleExtended\n    nextFireTime\n    __typename\n  }\n  __typename\n}\n\nfragment DisplayPortFields on DisplayPorts {\n  rconPort\n  queryPort\n  __typename\n}\n\nfragment SteamWorkshopItemFields on SteamWorkshopItem {\n  id\n  appId\n  itemType\n  name\n  links {\n    websiteUrl\n    __typename\n  }\n  summary\n  logo {\n    url\n    __typename\n  }\n  maps {\n    workshopId\n    mapName\n    __typename\n  }\n  dateCreated\n  dateModified\n  lastUpdateTime\n  __typename\n}\n\nfragment SevenDaysModFields on SevenDaysMod {\n  id\n  name\n  repoKey\n  active\n  created\n  modified\n  __typename\n}\n\nfragment MapParams on FarmingSimulatorMapParamsObject {\n  serverIp\n  webServerPort\n  webStatsCode\n  token\n  __typename\n}\n\nfragment TxAdminFields on TxAdmin {\n  enabled\n  port\n  username\n  password\n  __typename\n}\n\nfragment CtxFields on RootNamespace {\n  sys {\n    game {\n      name\n      key\n      platform\n      forumBoardId\n      supportedPlatforms\n      __typename\n    }\n    extraGameTranslationKeys\n    gameServer {\n      ...GameServerFields\n      __typename\n    }\n    permissionsOwner {\n      ...PermissionFields\n      __typename\n    }\n    permissions {\n      ...PermissionFields\n      __typename\n    }\n    mysqlDb {\n      ...MysqlDbFields\n      __typename\n    }\n    __typename\n  }\n  service {\n    config {\n      rsid {\n        id\n        region\n        __typename\n      }\n      type\n      hwId\n      state\n      ftpUser\n      ftpPort\n      ftpPassword\n      ftpReadOnly\n      ipAddress\n      rconPort\n      queryPort\n      autoBackup\n      dnsNames\n      currentVersion\n      targetVersion\n      __typename\n    }\n    latestRev {\n      id\n      created\n      __typename\n    }\n    maxSlots\n    files\n    memory {\n      base\n      effective\n      __typename\n    }\n    currentState {\n      ...ServiceStateFields\n      __typename\n    }\n    backups {\n      id\n      userSize\n      created\n      isAutoBackup\n      __typename\n    }\n    restartSchedule {\n      ...RestartTaskFields\n      __typename\n    }\n    dnsAvailableTlds\n    __typename\n  }\n  admin {\n    hardwareGuacamoleConnection {\n      url\n      __typename\n    }\n    __typename\n  }\n  profile {\n    __typename\n    ... on ProfileNamespace {\n      name\n      cfgFiles\n      logFiles\n      publicConfigs\n      configDefinition\n      displayPorts {\n        ...DisplayPortFields\n        __typename\n      }\n      enableCustomerDb\n      enableCustomHostnames\n      __typename\n    }\n    ... on MinecraftProfileNamespace {\n      name\n      cfgFiles\n      logFiles\n      publicConfigs\n      configDefinition\n      displayPorts {\n        rconPort\n        queryPort\n        additionalPorts\n        __typename\n      }\n      enableCustomerDb\n      enableCustomHostnames\n      worlds\n      addonRam\n      isRamServer\n      ramOrderCreationDate\n      ramStopTimeUtc\n      isConnectedToBungeecord\n      bungeecordServerUrl\n      executables {\n        id\n        name\n        key\n        default\n        __typename\n      }\n      mods {\n        id\n        repoKey\n        name\n        image\n        mindRam\n        projectUrl\n        revisions {\n          id\n          created\n          executableId\n          extraData\n          __typename\n        }\n        __typename\n      }\n      __typename\n    }\n    ... on CsgoProfileNamespace {\n      name\n      cfgFiles\n      logFiles\n      publicConfigs\n      configDefinition\n      displayPorts {\n        rconPort\n        queryPort\n        gotvPort\n        __typename\n      }\n      enableCustomerDb\n      enableCustomHostnames\n      selectedWorkshopItems {\n        ...SteamWorkshopItemFields\n        __typename\n      }\n      installedMaps {\n        name\n        displayName\n        workshopItem {\n          ...SteamWorkshopItemFields\n          __typename\n        }\n        __typename\n      }\n      __typename\n    }\n    ... on ValheimProfileNamespace {\n      name\n      cfgFiles\n      clientLink\n      logFiles\n      publicConfigs\n      configDefinition\n      displayPorts {\n        ...DisplayPortFields\n        __typename\n      }\n      enableCustomerDb\n      enableCustomHostnames\n      enableDeleteSavegames\n      __typename\n    }\n    ... on HellLetLooseProfileNamespace {\n      name\n      cfgFiles\n      logFiles\n      publicConfigs\n      configDefinition\n      displayPorts {\n        rconPort\n        queryPort\n        statsPort\n        beaconPort\n        __typename\n      }\n      enableCustomerDb\n      enableCustomHostnames\n      __typename\n    }\n    ... on AloftProfileNamespace {\n      name\n      cfgFiles\n      logFiles\n      serverRoomCode\n      publicConfigs\n      configDefinition\n      displayPorts {\n        ...DisplayPortFields\n        __typename\n      }\n      enableCustomerDb\n      enableCustomHostnames\n      enableDeleteSavegames\n      __typename\n    }\n    ... on SevenDaysToDieProfileNamespace {\n      name\n      cfgFiles\n      logFiles\n      publicConfigs\n      configDefinition\n      displayPorts {\n        rconPort\n        queryPort\n        telnetPort\n        webDashboardPort\n        __typename\n      }\n      enableCustomerDb\n      enableCustomHostnames\n      availableMods {\n        ...SevenDaysModFields\n        __typename\n      }\n      isModUpdateAvailable\n      __typename\n    }\n    ... on SoulmaskProfileNamespace {\n      name\n      cfgFiles\n      gameUid\n      logFiles\n      publicConfigs\n      configDefinition\n      displayPorts {\n        ...DisplayPortFields\n        __typename\n      }\n      enableCustomerDb\n      enableCustomHostnames\n      selectedWorkshopItems {\n        ...SteamWorkshopItemFields\n        __typename\n      }\n      __typename\n    }\n    ... on VRisingProfileNamespace {\n      name\n      cfgFiles\n      isLaunchServer\n      isOfficialServer\n      logFiles\n      publicConfigs\n      configDefinition\n      displayPorts {\n        ...DisplayPortFields\n        __typename\n      }\n      enableCustomerDb\n      enableCustomHostnames\n      enableDeleteSavegames\n      __typename\n    }\n    ... on RustConsoleProfileNamespace {\n      name\n      cfgFiles\n      logFiles\n      publicConfigs\n      configDefinition\n      displayPorts {\n        ...DisplayPortFields\n        __typename\n      }\n      enableCustomerDb\n      modifyActionHints\n      __typename\n    }\n    ... on FarmingSimulatorProfileNamespace {\n      name\n      cfgFiles\n      logFiles\n      publicConfigs\n      configDefinition\n      wiLink\n      defaultModSpace\n      masterWiLink\n      displayPorts {\n        rconPort\n        queryPort\n        webPort\n        __typename\n      }\n      mapParams {\n        ...MapParams\n        __typename\n      }\n      __typename\n    }\n    ... on BungeecordProfileNamespace {\n      name\n      cfgFiles\n      logFiles\n      publicConfigs\n      configDefinition\n      displayPorts {\n        rconPort\n        queryPort\n        additionalPorts\n        __typename\n      }\n      enableCustomerDb\n      enableCustomHostnames\n      gpServers\n      accessibleMinecraftServers {\n        ...GameServerFields\n        __typename\n      }\n      __typename\n    }\n    ... on ConanProfileNamespace {\n      name\n      cfgFiles\n      logFiles\n      publicConfigs\n      configDefinition\n      displayPorts {\n        ...DisplayPortFields\n        __typename\n      }\n      enableCustomerDb\n      enableCustomHostnames\n      enableDeleteSavegames\n      selectedWorkshopItems {\n        ...SteamWorkshopItemFields\n        __typename\n      }\n      isModUpdateAvailable\n      __typename\n    }\n    ... on FiveMProfileNamespace {\n      name\n      cfgFiles\n      logFiles\n      publicConfigs\n      configDefinition\n      displayPorts {\n        rconPort\n        queryPort\n        __typename\n      }\n      enableCustomerDb\n      enableCustomHostnames\n      txAdmin {\n        ...TxAdminFields\n        __typename\n      }\n      __typename\n    }\n    ... on ScumProfileNamespace {\n      name\n      cfgFiles\n      logFiles\n      publicConfigs\n      configDefinition\n      enableDeleteSavegames\n      displayPorts {\n        rconPort\n        queryPort\n        serverPort\n        __typename\n      }\n      __typename\n    }\n    ... on PalworldProfileNamespace {\n      name\n      cfgFiles\n      logFiles\n      publicConfigs\n      configDefinition\n      displayPorts {\n        rconPort\n        queryPort\n        __typename\n      }\n      enableDeleteSavegames\n      __typename\n    }\n    ... on AbioticFactorProfileNamespace {\n      name\n      cfgFiles\n      logFiles\n      publicConfigs\n      configDefinition\n      displayPorts {\n        ...DisplayPortFields\n        __typename\n      }\n      joinCode\n      __typename\n    }\n  }\n  __typename\n}",
+                query: 'query ctx($sid: Int!, $region: REGION!) {\n  cfgContext(rsid: {id: $sid, region: $region}) {\n    ns {\n      ...CtxFields\n      __typename\n    }\n    errors {\n      mutator\n      affectedPaths\n      error {\n        class_\n        args\n        __typename\n      }\n      scope\n      __typename\n    }\n    __typename\n  }\n}\n\nfragment GameServerFields on GameServer {\n  id\n  serverName\n  serverPort\n  serverIp\n  autoUpdate\n  __typename\n}\n\nfragment PermissionFields on Permission {\n  userName\n  created\n  __typename\n}\n\nfragment MysqlDbFields on CustomerMysqlDb {\n  httpUrl\n  host\n  port\n  database\n  username\n  password\n  __typename\n}\n\nfragment ServiceStateFields on ServiceState {\n  state\n  fsmState\n  fsmIsTransitioning\n  fsmIsExclusiveLocked\n  fsmFileAccess\n  fsmLastStateChange\n  fsmStateLiveProgress {\n    ... on InstallProgress {\n      action\n      percentage\n      __typename\n    }\n    ... on BroadcastProgress {\n      nextMessageAt\n      stateExitAt\n      __typename\n    }\n    __typename\n  }\n  __typename\n}\n\nfragment RestartTaskFields on RestartTask {\n  id\n  runOnWeekday\n  runOnDayofmonth\n  runAtTimeofday\n  runInTimezone\n  schedule\n  data {\n    description\n    args\n    scheduleExtended\n    nextFireTime\n    __typename\n  }\n  __typename\n}\n\nfragment DisplayPortFields on DisplayPorts {\n  rconPort\n  queryPort\n  __typename\n}\n\nfragment SteamWorkshopItemFields on SteamWorkshopItem {\n  id\n  appId\n  itemType\n  name\n  links {\n    websiteUrl\n    __typename\n  }\n  summary\n  logo {\n    url\n    __typename\n  }\n  maps {\n    workshopId\n    mapName\n    __typename\n  }\n  dateCreated\n  dateModified\n  lastUpdateTime\n  __typename\n}\n\nfragment SevenDaysModFields on SevenDaysMod {\n  id\n  name\n  repoKey\n  active\n  created\n  modified\n  __typename\n}\n\nfragment MapParams on FarmingSimulatorMapParamsObject {\n  serverIp\n  webServerPort\n  webStatsCode\n  token\n  __typename\n}\n\nfragment TxAdminFields on TxAdmin {\n  enabled\n  port\n  username\n  password\n  __typename\n}\n\nfragment CtxFields on RootNamespace {\n  sys {\n    game {\n      name\n      key\n      platform\n      forumBoardId\n      supportedPlatforms\n      __typename\n    }\n    extraGameTranslationKeys\n    gameServer {\n      ...GameServerFields\n      __typename\n    }\n    permissionsOwner {\n      ...PermissionFields\n      __typename\n    }\n    permissions {\n      ...PermissionFields\n      __typename\n    }\n    mysqlDb {\n      ...MysqlDbFields\n      __typename\n    }\n    __typename\n  }\n  service {\n    config {\n      rsid {\n        id\n        region\n        __typename\n      }\n      type\n      hwId\n      state\n      ftpUser\n      ftpPort\n      ftpPassword\n      ftpReadOnly\n      ipAddress\n      rconPort\n      queryPort\n      autoBackup\n      dnsNames\n      currentVersion\n      targetVersion\n      __typename\n    }\n    latestRev {\n      id\n      created\n      __typename\n    }\n    maxSlots\n    files\n    memory {\n      base\n      effective\n      __typename\n    }\n    currentState {\n      ...ServiceStateFields\n      __typename\n    }\n    backups {\n      id\n      userSize\n      created\n      isAutoBackup\n      __typename\n    }\n    restartSchedule {\n      ...RestartTaskFields\n      __typename\n    }\n    dnsAvailableTlds\n    __typename\n  }\n  admin {\n    hardwareGuacamoleConnection {\n      url\n      __typename\n    }\n    __typename\n  }\n  profile {\n    __typename\n    ... on ProfileNamespace {\n      name\n      cfgFiles\n      logFiles\n      publicConfigs\n      configDefinition\n      displayPorts {\n        ...DisplayPortFields\n        __typename\n      }\n      enableCustomerDb\n      enableCustomHostnames\n      __typename\n    }\n    ... on MinecraftProfileNamespace {\n      name\n      cfgFiles\n      logFiles\n      publicConfigs\n      configDefinition\n      displayPorts {\n        rconPort\n        queryPort\n        additionalPorts\n        __typename\n      }\n      enableCustomerDb\n      enableCustomHostnames\n      worlds\n      addonRam\n      isRamServer\n      ramOrderCreationDate\n      ramStopTimeUtc\n      isConnectedToBungeecord\n      bungeecordServerUrl\n      executables {\n        id\n        name\n        key\n        default\n        __typename\n      }\n      mods {\n        id\n        repoKey\n        name\n        image\n        mindRam\n        projectUrl\n        revisions {\n          id\n          created\n          executableId\n          extraData\n          __typename\n        }\n        __typename\n      }\n      __typename\n    }\n    ... on CsgoProfileNamespace {\n      name\n      cfgFiles\n      logFiles\n      publicConfigs\n      configDefinition\n      displayPorts {\n        rconPort\n        queryPort\n        gotvPort\n        __typename\n      }\n      enableCustomerDb\n      enableCustomHostnames\n      selectedWorkshopItems {\n        ...SteamWorkshopItemFields\n        __typename\n      }\n      installedMaps {\n        name\n        displayName\n        workshopItem {\n          ...SteamWorkshopItemFields\n          __typename\n        }\n        __typename\n      }\n      __typename\n    }\n    ... on ValheimProfileNamespace {\n      name\n      cfgFiles\n      clientLink\n      logFiles\n      publicConfigs\n      configDefinition\n      displayPorts {\n        ...DisplayPortFields\n        __typename\n      }\n      enableCustomerDb\n      enableCustomHostnames\n      enableDeleteSavegames\n      __typename\n    }\n    ... on HellLetLooseProfileNamespace {\n      name\n      cfgFiles\n      logFiles\n      publicConfigs\n      configDefinition\n      displayPorts {\n        rconPort\n        queryPort\n        statsPort\n        beaconPort\n        __typename\n      }\n      enableCustomerDb\n      enableCustomHostnames\n      __typename\n    }\n    ... on AloftProfileNamespace {\n      name\n      cfgFiles\n      logFiles\n      serverRoomCode\n      publicConfigs\n      configDefinition\n      displayPorts {\n        ...DisplayPortFields\n        __typename\n      }\n      enableCustomerDb\n      enableCustomHostnames\n      enableDeleteSavegames\n      __typename\n    }\n    ... on SevenDaysToDieProfileNamespace {\n      name\n      cfgFiles\n      logFiles\n      publicConfigs\n      configDefinition\n      displayPorts {\n        rconPort\n        queryPort\n        telnetPort\n        webDashboardPort\n        __typename\n      }\n      enableCustomerDb\n      enableCustomHostnames\n      availableMods {\n        ...SevenDaysModFields\n        __typename\n      }\n      isModUpdateAvailable\n      __typename\n    }\n    ... on SoulmaskProfileNamespace {\n      name\n      cfgFiles\n      gameUid\n      logFiles\n      publicConfigs\n      configDefinition\n      displayPorts {\n        ...DisplayPortFields\n        __typename\n      }\n      enableCustomerDb\n      enableCustomHostnames\n      selectedWorkshopItems {\n        ...SteamWorkshopItemFields\n        __typename\n      }\n      __typename\n    }\n    ... on VRisingProfileNamespace {\n      name\n      cfgFiles\n      isLaunchServer\n      isOfficialServer\n      logFiles\n      publicConfigs\n      configDefinition\n      displayPorts {\n        ...DisplayPortFields\n        __typename\n      }\n      enableCustomerDb\n      enableCustomHostnames\n      enableDeleteSavegames\n      __typename\n    }\n    ... on RustConsoleProfileNamespace {\n      name\n      cfgFiles\n      logFiles\n      publicConfigs\n      configDefinition\n      displayPorts {\n        ...DisplayPortFields\n        __typename\n      }\n      enableCustomerDb\n      modifyActionHints\n      __typename\n    }\n    ... on FarmingSimulatorProfileNamespace {\n      name\n      cfgFiles\n      logFiles\n      publicConfigs\n      configDefinition\n      wiLink\n      defaultModSpace\n      masterWiLink\n      displayPorts {\n        rconPort\n        queryPort\n        webPort\n        __typename\n      }\n      mapParams {\n        ...MapParams\n        __typename\n      }\n      __typename\n    }\n    ... on BungeecordProfileNamespace {\n      name\n      cfgFiles\n      logFiles\n      publicConfigs\n      configDefinition\n      displayPorts {\n        rconPort\n        queryPort\n        additionalPorts\n        __typename\n      }\n      enableCustomerDb\n      enableCustomHostnames\n      gpServers\n      accessibleMinecraftServers {\n        ...GameServerFields\n        __typename\n      }\n      __typename\n    }\n    ... on ConanProfileNamespace {\n      name\n      cfgFiles\n      logFiles\n      publicConfigs\n      configDefinition\n      displayPorts {\n        ...DisplayPortFields\n        __typename\n      }\n      enableCustomerDb\n      enableCustomHostnames\n      enableDeleteSavegames\n      selectedWorkshopItems {\n        ...SteamWorkshopItemFields\n        __typename\n      }\n      isModUpdateAvailable\n      __typename\n    }\n    ... on FiveMProfileNamespace {\n      name\n      cfgFiles\n      logFiles\n      publicConfigs\n      configDefinition\n      displayPorts {\n        rconPort\n        queryPort\n        __typename\n      }\n      enableCustomerDb\n      enableCustomHostnames\n      txAdmin {\n        ...TxAdminFields\n        __typename\n      }\n      __typename\n    }\n    ... on ScumProfileNamespace {\n      name\n      cfgFiles\n      logFiles\n      publicConfigs\n      configDefinition\n      enableDeleteSavegames\n      displayPorts {\n        rconPort\n        queryPort\n        serverPort\n        __typename\n      }\n      __typename\n    }\n    ... on PalworldProfileNamespace {\n      name\n      cfgFiles\n      logFiles\n      publicConfigs\n      configDefinition\n      displayPorts {\n        rconPort\n        queryPort\n        __typename\n      }\n      enableDeleteSavegames\n      __typename\n    }\n    ... on AbioticFactorProfileNamespace {\n      name\n      cfgFiles\n      logFiles\n      publicConfigs\n      configDefinition\n      displayPorts {\n        ...DisplayPortFields\n        __typename\n      }\n      joinCode\n      __typename\n    }\n  }\n  __typename\n}',
             };
             const response = await fetch(constants_1.GPortalRoutes.Api, {
-                method: "POST",
+                method: 'POST',
                 headers: {
-                    "Content-Type": "application/json",
+                    'Content-Type': 'application/json',
                     Authorization: `Bearer ${token}`,
                 },
                 body: JSON.stringify(payload),
@@ -320,7 +320,7 @@ class ServerManager {
             const json = await response.json();
             const advanced = json?.data?.cfgContext?.ns;
             if (!advanced) {
-                ServerUtils_1.default.error(this._manager, "Failed To Fetch Advanced Information: No Data");
+                ServerUtils_1.default.error(this._manager, 'Failed To Fetch Advanced Information: No Data');
                 return null;
             }
             const { sys, service } = advanced;
@@ -392,26 +392,26 @@ class ServerManager {
         const token = this._auth?.accessToken;
         if (!token) {
             ServerUtils_1.default.error(this._manager, `[${identifier}] Failed To Send Command: No Access Token`);
-            return { ok: false, error: "No Access Token" };
+            return { ok: false, error: 'No Access Token' };
         }
         const server = this._servers.get(identifier);
         if (!server) {
             ServerUtils_1.default.error(this._manager, `[${identifier}] Failed To Send Command: Invalid Server`);
-            return { ok: false, error: "Invalid Server" };
+            return { ok: false, error: 'Invalid Server' };
         }
-        if (server.status !== "RUNNING") {
+        if (server.status !== 'RUNNING') {
             this._manager.logger.warn(`[${identifier}] Failed To Send Command: Server Not Running`);
-            return { ok: false, error: "Server Not Running" };
+            return { ok: false, error: 'Server Not Running' };
         }
         this._manager.logger.debug(`[${identifier}] Sending Command: ${command}`);
         const payload = {
-            operationName: "sendConsoleMessage",
+            operationName: 'sendConsoleMessage',
             variables: {
                 sid: server.serverId[1],
                 region: server.region,
                 message: command,
             },
-            query: "mutation sendConsoleMessage($sid: Int!, $region: REGION!, $message: String!) {\n  sendConsoleMessage(rsid: {id: $sid, region: $region}, message: $message) {\n    ok\n    __typename\n  }\n}",
+            query: 'mutation sendConsoleMessage($sid: Int!, $region: REGION!, $message: String!) {\n  sendConsoleMessage(rsid: {id: $sid, region: $region}, message: $message) {\n    ok\n    __typename\n  }\n}',
         };
         if (response) {
             return new Promise(async (resolve, reject) => {
@@ -423,9 +423,9 @@ class ServerManager {
                 });
                 try {
                     const response = await fetch(constants_1.GPortalRoutes.Api, {
-                        method: "POST",
+                        method: 'POST',
                         headers: {
-                            "Content-Type": "application/json",
+                            'Content-Type': 'application/json',
                             Authorization: `Bearer ${token}`,
                         },
                         body: JSON.stringify(payload),
@@ -440,11 +440,11 @@ class ServerManager {
                     }
                     const data = await response.json();
                     if (!data?.data?.sendConsoleMessage?.ok) {
-                        ServerUtils_1.default.error(this._manager, "Failed To Send Command: AioRpcError", server);
+                        ServerUtils_1.default.error(this._manager, 'Failed To Send Command: AioRpcError', server);
                         CommandHandler_1.default.remove(CommandHandler_1.default.get(identifier, command));
                         resolve({
                             ok: false,
-                            error: "AioRpcError",
+                            error: 'AioRpcError',
                         });
                     }
                     const cmd = CommandHandler_1.default.get(identifier, command);
@@ -470,9 +470,9 @@ class ServerManager {
         else {
             try {
                 const response = await fetch(constants_1.GPortalRoutes.Api, {
-                    method: "POST",
+                    method: 'POST',
                     headers: {
-                        "Content-Type": "application/json",
+                        'Content-Type': 'application/json',
                         Authorization: `Bearer ${token}`,
                     },
                     body: JSON.stringify(payload),
@@ -504,7 +504,7 @@ class ServerManager {
             return this._manager.logger.warn(`[${identifier}] Failed To Update Broadcasters: Invalid Server`);
         }
         this._manager.logger.debug(`[${server.identifier}] Updating Broadcasters`);
-        const broadcasters = await this.command(server.identifier, "rf.listboardcaster", true);
+        const broadcasters = await this.command(server.identifier, 'rf.listboardcaster', true);
         if (!broadcasters?.response) {
             return this._manager.logger.warn(`[${server.identifier}] Failed To Update Broadcasters`);
         }
@@ -537,14 +537,14 @@ class ServerManager {
             if (broadcast.frequency === 4765) {
                 this._manager.events.emit(constants_1.RCEEvent.EventStart, {
                     server,
-                    event: "Small Oil Rig",
+                    event: 'Small Oil Rig',
                     special: false,
                 });
             }
             else if (broadcast.frequency === 4768) {
                 this._manager.events.emit(constants_1.RCEEvent.EventStart, {
                     server,
-                    event: "Oil Rig",
+                    event: 'Oil Rig',
                     special: false,
                 });
             }
@@ -564,40 +564,40 @@ class ServerManager {
             return this._manager.logger.warn(`[${identifier}] Failed To Fetch Gibs: Invalid Server`);
         }
         this._manager.logger.debug(`[${server.identifier}] Fetching Gibs`);
-        const bradley = await this.command(server.identifier, "find_entity servergibs_bradley", true);
-        const heli = await this.command(server.identifier, "find_entity servergibs_patrolhelicopter", true);
+        const bradley = await this.command(server.identifier, 'find_entity servergibs_bradley', true);
+        const heli = await this.command(server.identifier, 'find_entity servergibs_patrolhelicopter', true);
         if (!bradley?.response || !heli?.response) {
             return this._manager.logger.warn(`[${server.identifier}] Failed To Fetch Gibs`);
         }
-        if (bradley.response.includes("servergibs_bradley") &&
-            !server.flags.includes("BRADLEY")) {
-            server.flags.push("BRADLEY");
+        if (bradley.response.includes('servergibs_bradley') &&
+            !server.flags.includes('BRADLEY')) {
+            server.flags.push('BRADLEY');
             setTimeout(() => {
                 const s = this.get(server.identifier);
                 if (s) {
-                    s.flags = s.flags.filter((f) => f !== "BRADLEY");
+                    s.flags = s.flags.filter((f) => f !== 'BRADLEY');
                     this.update(s);
                 }
             }, 60_000 * 10);
             this._manager.events.emit(constants_1.RCEEvent.EventStart, {
                 server,
-                event: "Bradley APC Debris",
+                event: 'Bradley APC Debris',
                 special: false,
             });
         }
-        if (heli.response.includes("servergibs_patrolhelicopter") &&
-            !server.flags.includes("HELICOPTER")) {
-            server.flags.push("HELICOPTER");
+        if (heli.response.includes('servergibs_patrolhelicopter') &&
+            !server.flags.includes('HELICOPTER')) {
+            server.flags.push('HELICOPTER');
             setTimeout(() => {
                 const s = this.get(server.identifier);
                 if (s) {
-                    s.flags = s.flags.filter((f) => f !== "HELICOPTER");
+                    s.flags = s.flags.filter((f) => f !== 'HELICOPTER');
                     this.update(s);
                 }
             }, 60_000 * 10);
             this._manager.events.emit(constants_1.RCEEvent.EventStart, {
                 server,
-                event: "Patrol Helicopter Debris",
+                event: 'Patrol Helicopter Debris',
                 special: false,
             });
         }
@@ -610,13 +610,13 @@ class ServerManager {
             return this._manager.logger.warn(`[${identifier}] Failed To Update Players: Invalid Server`);
         }
         this._manager.logger.debug(`[${server.identifier}] Updating Players`);
-        const players = await this.command(server.identifier, "Users", true);
+        const players = await this.command(server.identifier, 'Users', true);
         if (!players?.response) {
             return this._manager.logger.warn(`[${server.identifier}] Failed To Update Players`);
         }
         const playerlist = players.response
             .match(/"(.*?)"/g)
-            .map((ign) => ign.replace(/"/g, ""));
+            .map((ign) => ign.replace(/"/g, ''));
         playerlist.shift();
         const { joined, left } = helper_1.default.comparePopulation(server.players, playerlist);
         joined.forEach((player) => {
@@ -665,17 +665,17 @@ class ServerManager {
     async fetchServers(region) {
         const token = this._auth?.accessToken;
         if (!token) {
-            this._manager.logger.warn("Failed To Fetch Servers: No Access Token");
+            this._manager.logger.warn('Failed To Fetch Servers: No Access Token');
             return [];
         }
-        this._manager.logger.debug("Fetching Servers");
+        this._manager.logger.debug('Fetching Servers');
         if (!region) {
-            const eu = await this.fetchServers("EU");
-            const us = await this.fetchServers("US");
+            const eu = await this.fetchServers('EU');
+            const us = await this.fetchServers('US');
             return [...eu, ...us];
         }
         try {
-            const response = await fetch(`${constants_1.GPortalRoutes.Origin}/${region === "EU" ? "eur" : "int"}/menu/clouds`, {
+            const response = await fetch(`${constants_1.GPortalRoutes.Origin}/${region === 'EU' ? 'eur' : 'int'}/menu/clouds`, {
                 headers: {
                     Authorization: `Bearer ${token}`,
                 },
@@ -686,16 +686,16 @@ class ServerManager {
             }
             const data = await response.json();
             const fetchedServers = data?.items
-                ?.filter((s) => s.label.includes("Rust"))
+                ?.filter((s) => s.label.includes('Rust'))
                 .map((s) => {
                 return {
                     rawName: s.items[0].label,
-                    name: s.items[0].label.replace(/<color=[^>]+>|<\/color>/g, ""),
+                    name: s.items[0].label.replace(/<color=[^>]+>|<\/color>/g, ''),
                     region,
-                    sid: [Number(s.items[0].data.url.split("/")[4])],
+                    sid: [Number(s.items[0].data.url.split('/')[4])],
                 };
             });
-            const resolveIdsRequest = await fetch(`${constants_1.GPortalRoutes.Origin}/${region === "EU" ? "eur" : "int"}/serviceIds`, {
+            const resolveIdsRequest = await fetch(`${constants_1.GPortalRoutes.Origin}/${region === 'EU' ? 'eur' : 'int'}/serviceIds`, {
                 headers: {
                     Authorization: `Bearer ${token}`,
                 },
@@ -727,18 +727,18 @@ class ServerManager {
         this._manager.logger.debug(`[${identifier}] Fetching Server Status`);
         try {
             const response = await fetch(constants_1.GPortalRoutes.Api, {
-                method: "POST",
+                method: 'POST',
                 headers: {
-                    "Content-Type": "application/json",
+                    'Content-Type': 'application/json',
                     Authorization: `Bearer ${token}`,
                 },
                 body: JSON.stringify({
-                    operationName: "ctx",
+                    operationName: 'ctx',
                     variables: {
                         sid,
                         region,
                     },
-                    query: "query ctx($sid: Int!, $region: REGION!) {\n  cfgContext(rsid: {id: $sid, region: $region}) {\n    ns {\n      ...CtxFields\n      __typename\n    }\n    errors {\n      mutator\n      affectedPaths\n      error {\n        class_\n        args\n        __typename\n      }\n      scope\n      __typename\n    }\n    __typename\n  }\n}\n\nfragment GameServerFields on GameServer {\n  id\n  serverName\n  serverPort\n  serverIp\n  autoUpdate\n  __typename\n}\n\nfragment PermissionFields on Permission {\n  userName\n  created\n  __typename\n}\n\nfragment MysqlDbFields on CustomerMysqlDb {\n  httpUrl\n  host\n  port\n  database\n  username\n  password\n  __typename\n}\n\nfragment ServiceStateFields on ServiceState {\n  state\n  fsmState\n  fsmIsTransitioning\n  fsmIsExclusiveLocked\n  fsmFileAccess\n  fsmLastStateChange\n  fsmStateLiveProgress {\n    ... on InstallProgress {\n      action\n      percentage\n      __typename\n    }\n    ... on BroadcastProgress {\n      nextMessageAt\n      stateExitAt\n      __typename\n    }\n    __typename\n  }\n  __typename\n}\n\nfragment RestartTaskFields on RestartTask {\n  id\n  runOnWeekday\n  runOnDayofmonth\n  runAtTimeofday\n  runInTimezone\n  schedule\n  data {\n    description\n    args\n    scheduleExtended\n    nextFireTime\n    __typename\n  }\n  __typename\n}\n\nfragment DisplayPortFields on DisplayPorts {\n  rconPort\n  queryPort\n  __typename\n}\n\nfragment SteamWorkshopItemFields on SteamWorkshopItem {\n  id\n  appId\n  itemType\n  name\n  links {\n    websiteUrl\n    __typename\n  }\n  summary\n  logo {\n    url\n    __typename\n  }\n  maps {\n    workshopId\n    mapName\n    __typename\n  }\n  dateCreated\n  dateModified\n  lastUpdateTime\n  __typename\n}\n\nfragment SevenDaysModFields on SevenDaysMod {\n  id\n  name\n  repoKey\n  active\n  created\n  modified\n  __typename\n}\n\nfragment MapParams on FarmingSimulatorMapParamsObject {\n  serverIp\n  webServerPort\n  webStatsCode\n  token\n  __typename\n}\n\nfragment TxAdminFields on TxAdmin {\n  enabled\n  port\n  username\n  password\n  __typename\n}\n\nfragment CtxFields on RootNamespace {\n  sys {\n    game {\n      name\n      key\n      platform\n      forumBoardId\n      supportedPlatforms\n      __typename\n    }\n    extraGameTranslationKeys\n    gameServer {\n      ...GameServerFields\n      __typename\n    }\n    permissionsOwner {\n      ...PermissionFields\n      __typename\n    }\n    permissions {\n      ...PermissionFields\n      __typename\n    }\n    mysqlDb {\n      ...MysqlDbFields\n      __typename\n    }\n    __typename\n  }\n  service {\n    config {\n      rsid {\n        id\n        region\n        __typename\n      }\n      type\n      hwId\n      state\n      ftpUser\n      ftpPort\n      ftpPassword\n      ftpReadOnly\n      ipAddress\n      rconPort\n      queryPort\n      autoBackup\n      dnsNames\n      currentVersion\n      targetVersion\n      __typename\n    }\n    latestRev {\n      id\n      created\n      __typename\n    }\n    maxSlots\n    files\n    memory {\n      base\n      effective\n      __typename\n    }\n    currentState {\n      ...ServiceStateFields\n      __typename\n    }\n    backups {\n      id\n      userSize\n      created\n      isAutoBackup\n      __typename\n    }\n    restartSchedule {\n      ...RestartTaskFields\n      __typename\n    }\n    dnsAvailableTlds\n    __typename\n  }\n  admin {\n    hardwareGuacamoleConnection {\n      url\n      __typename\n    }\n    __typename\n  }\n  profile {\n    __typename\n    ... on ProfileNamespace {\n      name\n      cfgFiles\n      logFiles\n      publicConfigs\n      configDefinition\n      displayPorts {\n        ...DisplayPortFields\n        __typename\n      }\n      enableCustomerDb\n      enableCustomHostnames\n      __typename\n    }\n    ... on MinecraftProfileNamespace {\n      name\n      cfgFiles\n      logFiles\n      publicConfigs\n      configDefinition\n      displayPorts {\n        rconPort\n        queryPort\n        additionalPorts\n        __typename\n      }\n      enableCustomerDb\n      enableCustomHostnames\n      worlds\n      addonRam\n      isRamServer\n      ramOrderCreationDate\n      ramStopTimeUtc\n      isConnectedToBungeecord\n      bungeecordServerUrl\n      executables {\n        id\n        name\n        key\n        default\n        __typename\n      }\n      mods {\n        id\n        repoKey\n        name\n        image\n        mindRam\n        projectUrl\n        revisions {\n          id\n          created\n          executableId\n          extraData\n          __typename\n        }\n        __typename\n      }\n      __typename\n    }\n    ... on CsgoProfileNamespace {\n      name\n      cfgFiles\n      logFiles\n      publicConfigs\n      configDefinition\n      displayPorts {\n        rconPort\n        queryPort\n        gotvPort\n        __typename\n      }\n      enableCustomerDb\n      enableCustomHostnames\n      selectedWorkshopItems {\n        ...SteamWorkshopItemFields\n        __typename\n      }\n      installedMaps {\n        name\n        displayName\n        workshopItem {\n          ...SteamWorkshopItemFields\n          __typename\n        }\n        __typename\n      }\n      __typename\n    }\n    ... on ValheimProfileNamespace {\n      name\n      cfgFiles\n      clientLink\n      logFiles\n      publicConfigs\n      configDefinition\n      displayPorts {\n        ...DisplayPortFields\n        __typename\n      }\n      enableCustomerDb\n      enableCustomHostnames\n      enableDeleteSavegames\n      __typename\n    }\n    ... on HellLetLooseProfileNamespace {\n      name\n      cfgFiles\n      logFiles\n      publicConfigs\n      configDefinition\n      displayPorts {\n        rconPort\n        queryPort\n        statsPort\n        beaconPort\n        __typename\n      }\n      enableCustomerDb\n      enableCustomHostnames\n      __typename\n    }\n    ... on AloftProfileNamespace {\n      name\n      cfgFiles\n      logFiles\n      serverRoomCode\n      publicConfigs\n      configDefinition\n      displayPorts {\n        ...DisplayPortFields\n        __typename\n      }\n      enableCustomerDb\n      enableCustomHostnames\n      enableDeleteSavegames\n      __typename\n    }\n    ... on SevenDaysToDieProfileNamespace {\n      name\n      cfgFiles\n      logFiles\n      publicConfigs\n      configDefinition\n      displayPorts {\n        rconPort\n        queryPort\n        telnetPort\n        webDashboardPort\n        __typename\n      }\n      enableCustomerDb\n      enableCustomHostnames\n      availableMods {\n        ...SevenDaysModFields\n        __typename\n      }\n      isModUpdateAvailable\n      __typename\n    }\n    ... on SoulmaskProfileNamespace {\n      name\n      cfgFiles\n      gameUid\n      logFiles\n      publicConfigs\n      configDefinition\n      displayPorts {\n        ...DisplayPortFields\n        __typename\n      }\n      enableCustomerDb\n      enableCustomHostnames\n      selectedWorkshopItems {\n        ...SteamWorkshopItemFields\n        __typename\n      }\n      __typename\n    }\n    ... on VRisingProfileNamespace {\n      name\n      cfgFiles\n      isLaunchServer\n      isOfficialServer\n      logFiles\n      publicConfigs\n      configDefinition\n      displayPorts {\n        ...DisplayPortFields\n        __typename\n      }\n      enableCustomerDb\n      enableCustomHostnames\n      enableDeleteSavegames\n      __typename\n    }\n    ... on RustConsoleProfileNamespace {\n      name\n      cfgFiles\n      logFiles\n      publicConfigs\n      configDefinition\n      displayPorts {\n        ...DisplayPortFields\n        __typename\n      }\n      enableCustomerDb\n      modifyActionHints\n      __typename\n    }\n    ... on FarmingSimulatorProfileNamespace {\n      name\n      cfgFiles\n      logFiles\n      publicConfigs\n      configDefinition\n      wiLink\n      defaultModSpace\n      masterWiLink\n      displayPorts {\n        rconPort\n        queryPort\n        webPort\n        __typename\n      }\n      mapParams {\n        ...MapParams\n        __typename\n      }\n      __typename\n    }\n    ... on BungeecordProfileNamespace {\n      name\n      cfgFiles\n      logFiles\n      publicConfigs\n      configDefinition\n      displayPorts {\n        rconPort\n        queryPort\n        additionalPorts\n        __typename\n      }\n      enableCustomerDb\n      enableCustomHostnames\n      gpServers\n      accessibleMinecraftServers {\n        ...GameServerFields\n        __typename\n      }\n      __typename\n    }\n    ... on ConanProfileNamespace {\n      name\n      cfgFiles\n      logFiles\n      publicConfigs\n      configDefinition\n      displayPorts {\n        ...DisplayPortFields\n        __typename\n      }\n      enableCustomerDb\n      enableCustomHostnames\n      enableDeleteSavegames\n      selectedWorkshopItems {\n        ...SteamWorkshopItemFields\n        __typename\n      }\n      isModUpdateAvailable\n      __typename\n    }\n    ... on FiveMProfileNamespace {\n      name\n      cfgFiles\n      logFiles\n      publicConfigs\n      configDefinition\n      displayPorts {\n        rconPort\n        queryPort\n        __typename\n      }\n      enableCustomerDb\n      enableCustomHostnames\n      txAdmin {\n        ...TxAdminFields\n        __typename\n      }\n      __typename\n    }\n    ... on ScumProfileNamespace {\n      name\n      cfgFiles\n      logFiles\n      publicConfigs\n      configDefinition\n      enableDeleteSavegames\n      displayPorts {\n        rconPort\n        queryPort\n        serverPort\n        __typename\n      }\n      __typename\n    }\n    ... on PalworldProfileNamespace {\n      name\n      cfgFiles\n      logFiles\n      publicConfigs\n      configDefinition\n      displayPorts {\n        rconPort\n        queryPort\n        __typename\n      }\n      enableDeleteSavegames\n      __typename\n    }\n    ... on AbioticFactorProfileNamespace {\n      name\n      cfgFiles\n      logFiles\n      publicConfigs\n      configDefinition\n      displayPorts {\n        ...DisplayPortFields\n        __typename\n      }\n      joinCode\n      __typename\n    }\n  }\n  __typename\n}",
+                    query: 'query ctx($sid: Int!, $region: REGION!) {\n  cfgContext(rsid: {id: $sid, region: $region}) {\n    ns {\n      ...CtxFields\n      __typename\n    }\n    errors {\n      mutator\n      affectedPaths\n      error {\n        class_\n        args\n        __typename\n      }\n      scope\n      __typename\n    }\n    __typename\n  }\n}\n\nfragment GameServerFields on GameServer {\n  id\n  serverName\n  serverPort\n  serverIp\n  autoUpdate\n  __typename\n}\n\nfragment PermissionFields on Permission {\n  userName\n  created\n  __typename\n}\n\nfragment MysqlDbFields on CustomerMysqlDb {\n  httpUrl\n  host\n  port\n  database\n  username\n  password\n  __typename\n}\n\nfragment ServiceStateFields on ServiceState {\n  state\n  fsmState\n  fsmIsTransitioning\n  fsmIsExclusiveLocked\n  fsmFileAccess\n  fsmLastStateChange\n  fsmStateLiveProgress {\n    ... on InstallProgress {\n      action\n      percentage\n      __typename\n    }\n    ... on BroadcastProgress {\n      nextMessageAt\n      stateExitAt\n      __typename\n    }\n    __typename\n  }\n  __typename\n}\n\nfragment RestartTaskFields on RestartTask {\n  id\n  runOnWeekday\n  runOnDayofmonth\n  runAtTimeofday\n  runInTimezone\n  schedule\n  data {\n    description\n    args\n    scheduleExtended\n    nextFireTime\n    __typename\n  }\n  __typename\n}\n\nfragment DisplayPortFields on DisplayPorts {\n  rconPort\n  queryPort\n  __typename\n}\n\nfragment SteamWorkshopItemFields on SteamWorkshopItem {\n  id\n  appId\n  itemType\n  name\n  links {\n    websiteUrl\n    __typename\n  }\n  summary\n  logo {\n    url\n    __typename\n  }\n  maps {\n    workshopId\n    mapName\n    __typename\n  }\n  dateCreated\n  dateModified\n  lastUpdateTime\n  __typename\n}\n\nfragment SevenDaysModFields on SevenDaysMod {\n  id\n  name\n  repoKey\n  active\n  created\n  modified\n  __typename\n}\n\nfragment MapParams on FarmingSimulatorMapParamsObject {\n  serverIp\n  webServerPort\n  webStatsCode\n  token\n  __typename\n}\n\nfragment TxAdminFields on TxAdmin {\n  enabled\n  port\n  username\n  password\n  __typename\n}\n\nfragment CtxFields on RootNamespace {\n  sys {\n    game {\n      name\n      key\n      platform\n      forumBoardId\n      supportedPlatforms\n      __typename\n    }\n    extraGameTranslationKeys\n    gameServer {\n      ...GameServerFields\n      __typename\n    }\n    permissionsOwner {\n      ...PermissionFields\n      __typename\n    }\n    permissions {\n      ...PermissionFields\n      __typename\n    }\n    mysqlDb {\n      ...MysqlDbFields\n      __typename\n    }\n    __typename\n  }\n  service {\n    config {\n      rsid {\n        id\n        region\n        __typename\n      }\n      type\n      hwId\n      state\n      ftpUser\n      ftpPort\n      ftpPassword\n      ftpReadOnly\n      ipAddress\n      rconPort\n      queryPort\n      autoBackup\n      dnsNames\n      currentVersion\n      targetVersion\n      __typename\n    }\n    latestRev {\n      id\n      created\n      __typename\n    }\n    maxSlots\n    files\n    memory {\n      base\n      effective\n      __typename\n    }\n    currentState {\n      ...ServiceStateFields\n      __typename\n    }\n    backups {\n      id\n      userSize\n      created\n      isAutoBackup\n      __typename\n    }\n    restartSchedule {\n      ...RestartTaskFields\n      __typename\n    }\n    dnsAvailableTlds\n    __typename\n  }\n  admin {\n    hardwareGuacamoleConnection {\n      url\n      __typename\n    }\n    __typename\n  }\n  profile {\n    __typename\n    ... on ProfileNamespace {\n      name\n      cfgFiles\n      logFiles\n      publicConfigs\n      configDefinition\n      displayPorts {\n        ...DisplayPortFields\n        __typename\n      }\n      enableCustomerDb\n      enableCustomHostnames\n      __typename\n    }\n    ... on MinecraftProfileNamespace {\n      name\n      cfgFiles\n      logFiles\n      publicConfigs\n      configDefinition\n      displayPorts {\n        rconPort\n        queryPort\n        additionalPorts\n        __typename\n      }\n      enableCustomerDb\n      enableCustomHostnames\n      worlds\n      addonRam\n      isRamServer\n      ramOrderCreationDate\n      ramStopTimeUtc\n      isConnectedToBungeecord\n      bungeecordServerUrl\n      executables {\n        id\n        name\n        key\n        default\n        __typename\n      }\n      mods {\n        id\n        repoKey\n        name\n        image\n        mindRam\n        projectUrl\n        revisions {\n          id\n          created\n          executableId\n          extraData\n          __typename\n        }\n        __typename\n      }\n      __typename\n    }\n    ... on CsgoProfileNamespace {\n      name\n      cfgFiles\n      logFiles\n      publicConfigs\n      configDefinition\n      displayPorts {\n        rconPort\n        queryPort\n        gotvPort\n        __typename\n      }\n      enableCustomerDb\n      enableCustomHostnames\n      selectedWorkshopItems {\n        ...SteamWorkshopItemFields\n        __typename\n      }\n      installedMaps {\n        name\n        displayName\n        workshopItem {\n          ...SteamWorkshopItemFields\n          __typename\n        }\n        __typename\n      }\n      __typename\n    }\n    ... on ValheimProfileNamespace {\n      name\n      cfgFiles\n      clientLink\n      logFiles\n      publicConfigs\n      configDefinition\n      displayPorts {\n        ...DisplayPortFields\n        __typename\n      }\n      enableCustomerDb\n      enableCustomHostnames\n      enableDeleteSavegames\n      __typename\n    }\n    ... on HellLetLooseProfileNamespace {\n      name\n      cfgFiles\n      logFiles\n      publicConfigs\n      configDefinition\n      displayPorts {\n        rconPort\n        queryPort\n        statsPort\n        beaconPort\n        __typename\n      }\n      enableCustomerDb\n      enableCustomHostnames\n      __typename\n    }\n    ... on AloftProfileNamespace {\n      name\n      cfgFiles\n      logFiles\n      serverRoomCode\n      publicConfigs\n      configDefinition\n      displayPorts {\n        ...DisplayPortFields\n        __typename\n      }\n      enableCustomerDb\n      enableCustomHostnames\n      enableDeleteSavegames\n      __typename\n    }\n    ... on SevenDaysToDieProfileNamespace {\n      name\n      cfgFiles\n      logFiles\n      publicConfigs\n      configDefinition\n      displayPorts {\n        rconPort\n        queryPort\n        telnetPort\n        webDashboardPort\n        __typename\n      }\n      enableCustomerDb\n      enableCustomHostnames\n      availableMods {\n        ...SevenDaysModFields\n        __typename\n      }\n      isModUpdateAvailable\n      __typename\n    }\n    ... on SoulmaskProfileNamespace {\n      name\n      cfgFiles\n      gameUid\n      logFiles\n      publicConfigs\n      configDefinition\n      displayPorts {\n        ...DisplayPortFields\n        __typename\n      }\n      enableCustomerDb\n      enableCustomHostnames\n      selectedWorkshopItems {\n        ...SteamWorkshopItemFields\n        __typename\n      }\n      __typename\n    }\n    ... on VRisingProfileNamespace {\n      name\n      cfgFiles\n      isLaunchServer\n      isOfficialServer\n      logFiles\n      publicConfigs\n      configDefinition\n      displayPorts {\n        ...DisplayPortFields\n        __typename\n      }\n      enableCustomerDb\n      enableCustomHostnames\n      enableDeleteSavegames\n      __typename\n    }\n    ... on RustConsoleProfileNamespace {\n      name\n      cfgFiles\n      logFiles\n      publicConfigs\n      configDefinition\n      displayPorts {\n        ...DisplayPortFields\n        __typename\n      }\n      enableCustomerDb\n      modifyActionHints\n      __typename\n    }\n    ... on FarmingSimulatorProfileNamespace {\n      name\n      cfgFiles\n      logFiles\n      publicConfigs\n      configDefinition\n      wiLink\n      defaultModSpace\n      masterWiLink\n      displayPorts {\n        rconPort\n        queryPort\n        webPort\n        __typename\n      }\n      mapParams {\n        ...MapParams\n        __typename\n      }\n      __typename\n    }\n    ... on BungeecordProfileNamespace {\n      name\n      cfgFiles\n      logFiles\n      publicConfigs\n      configDefinition\n      displayPorts {\n        rconPort\n        queryPort\n        additionalPorts\n        __typename\n      }\n      enableCustomerDb\n      enableCustomHostnames\n      gpServers\n      accessibleMinecraftServers {\n        ...GameServerFields\n        __typename\n      }\n      __typename\n    }\n    ... on ConanProfileNamespace {\n      name\n      cfgFiles\n      logFiles\n      publicConfigs\n      configDefinition\n      displayPorts {\n        ...DisplayPortFields\n        __typename\n      }\n      enableCustomerDb\n      enableCustomHostnames\n      enableDeleteSavegames\n      selectedWorkshopItems {\n        ...SteamWorkshopItemFields\n        __typename\n      }\n      isModUpdateAvailable\n      __typename\n    }\n    ... on FiveMProfileNamespace {\n      name\n      cfgFiles\n      logFiles\n      publicConfigs\n      configDefinition\n      displayPorts {\n        rconPort\n        queryPort\n        __typename\n      }\n      enableCustomerDb\n      enableCustomHostnames\n      txAdmin {\n        ...TxAdminFields\n        __typename\n      }\n      __typename\n    }\n    ... on ScumProfileNamespace {\n      name\n      cfgFiles\n      logFiles\n      publicConfigs\n      configDefinition\n      enableDeleteSavegames\n      displayPorts {\n        rconPort\n        queryPort\n        serverPort\n        __typename\n      }\n      __typename\n    }\n    ... on PalworldProfileNamespace {\n      name\n      cfgFiles\n      logFiles\n      publicConfigs\n      configDefinition\n      displayPorts {\n        rconPort\n        queryPort\n        __typename\n      }\n      enableDeleteSavegames\n      __typename\n    }\n    ... on AbioticFactorProfileNamespace {\n      name\n      cfgFiles\n      logFiles\n      publicConfigs\n      configDefinition\n      displayPorts {\n        ...DisplayPortFields\n        __typename\n      }\n      joinCode\n      __typename\n    }\n  }\n  __typename\n}',
                 }),
             });
             if (!response.ok) {
@@ -763,18 +763,18 @@ class ServerManager {
         this._manager.logger.debug(`[${identifier}] Fetching Server ID`);
         try {
             const response = await fetch(constants_1.GPortalRoutes.Api, {
-                method: "POST",
+                method: 'POST',
                 headers: {
-                    "Content-Type": "application/json",
+                    'Content-Type': 'application/json',
                     Authorization: `Bearer ${token}`,
                 },
                 body: JSON.stringify({
-                    operationName: "sid",
+                    operationName: 'sid',
                     variables: {
                         gameserverId: Number(sid),
                         region,
                     },
-                    query: "query sid($gameserverId: Int!, $region: REGION!) {\n  sid(gameserverId: $gameserverId, region: $region)\n}",
+                    query: 'query sid($gameserverId: Int!, $region: REGION!) {\n  sid(gameserverId: $gameserverId, region: $region)\n}',
                 }),
             });
             if (!response.ok) {

@@ -1,7 +1,7 @@
-import type GPortalAuth from "../auth/Auth";
-import type GPortalSocket from "../socket/Socket";
-import type RCEManager from "../Manager";
-import type { ServerOptions, RustServer, CommandResponse, RustServerInformation, FetchedServer, RustServerAdvancedInformation } from "./interfaces";
+import type GPortalAuth from '../auth/Auth';
+import type GPortalSocket from '../socket/Socket';
+import type RCEManager from '../Manager';
+import type { ServerOptions, FarmingSim25Server, CommandResponse, FarmingSim25ServerInformation, FetchedServer, FarmingSim25ServerAdvancedInformation } from './interfaces';
 export default class ServerManager {
     private _manager;
     private _auth;
@@ -61,7 +61,7 @@ export default class ServerManager {
     add(opts: ServerOptions): Promise<boolean>;
     /**
      *
-     * @param server {RustServer} - The server to update
+     * @param server {FarmingSim25Server} - The server to update
      * @returns {void}
      * @description Updates a server
      *
@@ -70,7 +70,7 @@ export default class ServerManager {
      * manager.servers.update(server);
      * ```
      */
-    update(server: RustServer): void;
+    update(server: FarmingSim25Server): void;
     /**
      * @returns {void}
      * @description Removes all servers from the manager
@@ -95,7 +95,7 @@ export default class ServerManager {
     removeMany(identifiers: string[]): void;
     /**
      *
-     * @param server {RustServer} - The server to remove
+     * @param server {FarmingSim25Server} - The server to remove
      * @returns {void}
      * @description Removes a server from the manager
      *
@@ -104,11 +104,11 @@ export default class ServerManager {
      * manager.servers.remove(server);
      * ```
      */
-    remove(server: RustServer): void;
+    remove(server: FarmingSim25Server): void;
     /**
      *
      * @param identifier {string} - The server identifier
-     * @returns {RustServer | undefined} - The server
+     * @returns {FarmingSim25Server | undefined} - The server
      * @description Gets a server by its identifier
      *
      * @example
@@ -116,10 +116,10 @@ export default class ServerManager {
      * const server = manager.servers.get("my-server-id");
      * ```
      */
-    get(identifier: string): RustServer;
+    get(identifier: string): FarmingSim25Server;
     /**
      *
-     * @returns {RustServer[]} - All servers
+     * @returns {FarmingSim25Server[]} - All servers
      * @description Gets all servers
      *
      * @example
@@ -127,12 +127,12 @@ export default class ServerManager {
      * const servers = manager.servers.getAll();
      * ```
      */
-    getAll(): Map<string, RustServer>;
+    getAll(): Map<string, FarmingSim25Server>;
     /**
      *
      * @param identifier - The server identifier
      * @param rawHostname - Whether to return the raw hostname
-     * @returns {Promise<RustServerInformation | null>} - The server information
+     * @returns {Promise<FarmingSim25ServerInformation | null>} - The server information
      *
      * @example
      * ```js
@@ -144,8 +144,8 @@ export default class ServerManager {
      * const info = await manager.servers.info("my-server-id", true);
      * ```
      */
-    info(identifier: string, rawHostname?: boolean): Promise<RustServerInformation>;
-    fetchAdvanced(identifier: string): Promise<RustServerAdvancedInformation>;
+    info(identifier: string, rawHostname?: boolean): Promise<FarmingSim25ServerInformation>;
+    fetchAdvanced(identifier: string): Promise<FarmingSim25ServerAdvancedInformation>;
     /**
      *
      * @param identifier - The server identifier
@@ -188,7 +188,7 @@ export default class ServerManager {
      * const servers = await manager.servers.fetchServers();
      * ```
      */
-    fetchServers(region?: "US" | "EU"): Promise<FetchedServer[]>;
+    fetchServers(region?: 'US' | 'EU'): Promise<FetchedServer[]>;
     private fetchStatus;
     private fetchId;
 }

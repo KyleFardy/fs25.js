@@ -1,13 +1,13 @@
-import type { RustServer } from "../servers/interfaces";
-import type { WSMessage } from "./interfaces";
-import { RCEEvent } from "../constants";
-import type RCEManager from "../Manager";
+import type { FarmingSim25Server } from '../servers/interfaces';
+import type { WSMessage } from './interfaces';
+import { RCEEvent } from '../constants';
+import type RCEManager from '../Manager';
 
 export default class ServiceSensorHandler {
   public static handle(
     manager: RCEManager,
     message: WSMessage,
-    server: RustServer
+    server: FarmingSim25Server
   ) {
     const { cpuTotal, memory } = message.payload.data.serviceSensors;
 

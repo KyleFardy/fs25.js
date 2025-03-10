@@ -1,6 +1,6 @@
 {
-  "name": "rce.js",
-  "version": "3.3.0",
+  "name": "fs25.js",
+  "version": "1.0.0",
   "main": "dist/index.js",
   "directories": {
     "test": "tests"
@@ -8,18 +8,17 @@
   "scripts": {},
   "repository": {
     "type": "git",
-    "url": "https://github.com/b1nzeex/rce.js.git"
+    "url": "https://github.com/KyleFardy/fs25.js.git"
   },
   "keywords": [
-    "rce",
-    "rust console edition",
+    "farming sim 25",
     "g-portal",
     "websocket",
     "api"
   ],
   "author": "b1nzee / b1nzeee / b1nzeex",
   "license": "ISC",
-  "description": "A wrapper for Rust Console Edition (RCE) that allows you to use the websocket and API from G-Portal.",
+  "description": "A wrapper for Farming Simulator 25 that allows you to use the websocket and API from G-Portal.",
   "devDependencies": {
     "@types/node": "^20.14.14",
     "@types/ws": "^8.5.11"

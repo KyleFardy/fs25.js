@@ -1,7 +1,7 @@
-import { LogLevel, QuickChat, RCEEvent } from "./constants";
-import { ILogger } from "./logger/interfaces";
-import type { RustServer } from "./servers/interfaces";
-import { PlayerKillData } from "./socket/interfaces";
+import { LogLevel, QuickChat, RCEEvent } from './constants';
+import { ILogger } from './logger/interfaces';
+import type { FarmingSim25Server } from './servers/interfaces';
+import { PlayerKillData } from './socket/interfaces';
 
 export interface AuthOptions {
   username: string;
@@ -15,7 +15,7 @@ export interface LoggerOptions {
 }
 
 interface EventPayload {
-  server: RustServer;
+  server: FarmingSim25Server;
 }
 
 export interface MessageEventPayload extends EventPayload {
@@ -27,7 +27,7 @@ export interface ServerReadyEventPayload extends EventPayload {
 }
 
 export interface ServiceStatusEventPayload extends EventPayload {
-  status: RustServer["status"];
+  status: FarmingSim25Server['status'];
 }
 
 export interface ServiceSensorEventPayload extends EventPayload {
@@ -46,7 +46,7 @@ export interface VendingMachineNameEventPayload extends EventPayload {
 }
 
 export interface QuickChatEventPayload extends EventPayload {
-  type: "team" | "server" | "local";
+  type: 'team' | 'server' | 'local';
   ign: string;
   message: QuickChat;
 }
@@ -57,7 +57,7 @@ export interface PlayerSuicideEventPayload extends EventPayload {
 
 export interface PlayerRespawnedEventPayload extends EventPayload {
   ign: string;
-  platform: "XBL" | "PS";
+  platform: 'XBL' | 'PS';
 }
 
 export interface CustomZoneCreatedEventPayload extends EventPayload {
@@ -128,21 +128,21 @@ export interface PlayerLeftEventPayload extends EventPayload {
 }
 
 export interface SpecialEventSetEventPayload extends EventPayload {
-  event: "Easter" | "Halloween" | "Xmas" | "HalloweenPortal" | "XmasPortal";
+  event: 'Easter' | 'Halloween' | 'Xmas' | 'HalloweenPortal' | 'XmasPortal';
 }
 
 export interface EventStartEventPayload extends EventPayload {
   event:
-    | "Airdrop"
-    | "Cargo Ship"
-    | "Chinook"
-    | "Patrol Helicopter"
-    | "Halloween"
-    | "Christmas"
-    | "Small Oil Rig"
-    | "Oil Rig"
-    | "Bradley APC Debris"
-    | "Patrol Helicopter Debris";
+    | 'Airdrop'
+    | 'Cargo Ship'
+    | 'Chinook'
+    | 'Patrol Helicopter'
+    | 'Halloween'
+    | 'Christmas'
+    | 'Small Oil Rig'
+    | 'Oil Rig'
+    | 'Bradley APC Debris'
+    | 'Patrol Helicopter Debris';
   special: boolean;
 }
 
@@ -169,7 +169,7 @@ export interface FrequencyLostEventPayload extends EventPayload {
 
 export interface ErrorEventPayload {
   error: string;
-  server?: RustServer;
+  server?: FarmingSim25Server;
 }
 
 export interface RCEEventTypes {

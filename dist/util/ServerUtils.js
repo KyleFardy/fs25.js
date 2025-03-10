@@ -7,15 +7,15 @@ class ServerUtils {
     }
     static async setReady(manager, server, ready) {
         if (ready) {
-            server.flags.push("READY");
+            server.flags.push('READY');
         }
         else {
-            server.flags = server.flags.filter((flag) => flag !== "READY");
+            server.flags = server.flags.filter((flag) => flag !== 'READY');
         }
         await this.sleep(3_000);
         manager.servers.update(server);
-        await manager.servers.command(server.identifier, "save");
-        manager.logger.info(`[${server.identifier}] Server ${ready ? "Ready" : "Unready"}`);
+        await manager.servers.command(server.identifier, 'save');
+        manager.logger.info(`[${server.identifier}] Server ${ready ? 'Ready' : 'Unready'}`);
         manager.events.emit(constants_1.RCEEvent.ServerReady, { server, ready });
     }
     static sleep(ms) {

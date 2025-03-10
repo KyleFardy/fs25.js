@@ -1,6 +1,6 @@
-import type GPortalAuth from "../auth/Auth";
-import type { RustServer } from "../servers/interfaces";
-import type RCEManager from "../Manager";
+import type GPortalAuth from '../auth/Auth';
+import type { FarmingSim25Server } from '../servers/interfaces';
+import type RCEManager from '../Manager';
 export default class GPortalSocket {
     private _manager;
     private _auth;
@@ -11,7 +11,7 @@ export default class GPortalSocket {
     constructor(manager: RCEManager, auth: GPortalAuth);
     close(): void;
     connect(resubsctibe?: boolean): void;
-    removeServer(server: RustServer): void;
-    addServer(server: RustServer): void;
+    removeServer(server: FarmingSim25Server): void;
+    addServer(server: FarmingSim25Server): void;
     private authenticate;
 }
